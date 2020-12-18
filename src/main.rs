@@ -114,8 +114,10 @@ fn select_block_device(allow_non_removable: bool) -> anyhow::Result<PathBuf> {
 /// Creates the installation
 #[allow(clippy::cognitive_complexity)] // TODO: Split steps into functions and remove this
 fn create(command: args::CreateCommand) -> anyhow::Result<()> {
+    debug!("Loading presets...");
     let presets = presets::PresetsCollection::load(&command.presets)?;
 
+    debug!("Enumerate host tools...");
     let sgdisk = Tool::find("sgdisk")?;
     let pacstrap = Tool::find("pacstrap")?;
     let arch_chroot = Tool::find("arch-chroot")?;

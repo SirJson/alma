@@ -9,6 +9,7 @@ pub use qemu::qemu;
 use std::path::PathBuf;
 use std::process::Command;
 use which::which;
+use log::debug;
 
 #[derive(Debug)]
 pub struct Tool {
@@ -17,6 +18,7 @@ pub struct Tool {
 
 impl Tool {
     pub fn find(name: &'static str) -> anyhow::Result<Self> {
+        debug!("Searching commandline tool '{}'", name);
         Ok(Self { exec: which(name)? })
     }
 
