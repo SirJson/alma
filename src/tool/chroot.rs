@@ -8,7 +8,6 @@ use crate::storage::{is_encrypted_device, EncryptedDevice};
 use crate::storage::{BlockDevice, Filesystem, FilesystemType, LoopDevice};
 use anyhow::Context;
 use log::info;
-
 use tempfile::tempdir;
 
 /// Use arch-chroot to chroot to the given device
@@ -52,7 +51,7 @@ pub fn chroot(command: args::ChrootCommand) -> anyhow::Result<()> {
     } else {
         &root_partition_base as &dyn BlockDevice
     };
-    let root_filesystem = Filesystem::from_partition(root_partition, FilesystemType::Ext4);
+    let root_filesystem = Filesystem::from_partition(root_partition, command.rootfs);
 
     let mount_stack = mount(mount_point.path(), &boot_filesystem, &root_filesystem)?;
 

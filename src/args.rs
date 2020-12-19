@@ -1,3 +1,4 @@
+use crate::storage::FilesystemType;
 use super::aur::AurHelper;
 use byte_unit::Byte;
 use std::path::PathBuf;
@@ -54,6 +55,12 @@ pub struct CreateCommand {
     #[structopt(short = "e", long = "encrypted-root")]
     pub encrypted_root: bool,
 
+    /// Request a different FilesystemType for the new root filesystem. Supported are: 'ext4', 'f2fs'. 
+    /// You can choose only one format and your input will be parsed case insensitive.
+    /// If not set or the argument failed to parse 'ext4' will be used as fallback
+    #[structopt(short = "f", long="rootfs")]
+    pub rootfs: Option<FilesystemType>,
+
     /// Path to preset files
     #[structopt(long = "presets", value_name = "preset")]
     pub presets: Vec<PathBuf>,
@@ -91,6 +98,11 @@ pub struct ChrootCommand {
     /// Allow installation on non-removable devices. Use with extreme caution!
     #[structopt(long = "allow-non-removable")]
     pub allow_non_removable: bool,
+
+    /// If you created an appliance that doesn't use the default rootfs format you need specify your fs type here.
+    /// Without using this argument 'ext4' is assumed for your rootfs.
+    #[structopt(short = "f", long="rootfs")]
+    pub rootfs: FilesystemType,
 
     /// Optional command to run
     #[structopt()]

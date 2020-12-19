@@ -6,10 +6,10 @@ pub use chroot::chroot;
 pub use mount::mount;
 pub use qemu::qemu;
 
+use log::debug;
 use std::path::PathBuf;
 use std::process::Command;
 use which::which;
-use log::debug;
 
 #[derive(Debug)]
 pub struct Tool {
@@ -18,6 +18,11 @@ pub struct Tool {
 
 impl Tool {
     pub fn find(name: &'static str) -> anyhow::Result<Self> {
+        debug!("Searching commandline tool '{}'", name);
+        Ok(Self { exec: which(name)? })
+    }
+
+    pub fn find_dynamic(name: &String) -> anyhow::Result<Self> {
         debug!("Searching commandline tool '{}'", name);
         Ok(Self { exec: which(name)? })
     }

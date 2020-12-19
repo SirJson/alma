@@ -118,12 +118,16 @@ fn create(command: args::CreateCommand) -> anyhow::Result<()> {
     let presets = presets::PresetsCollection::load(&command.presets)?;
 
     debug!("Enumerate host tools...");
+    let rootfs_type = command.rootfs.unwrap_or(FilesystemType::Ext4);
+    let rootfs_tool_name = format!("mkfs.{}",rootfs_type.to_mount_type());
+
     let sgdisk = Tool::find("sgdisk")?;
+    let partprobe = Tool::find("partprobe")?;
     let pacstrap = Tool::find("pacstrap")?;
     let arch_chroot = Tool::find("arch-chroot")?;
     let genfstab = Tool::find("genfstab")?;
     let mkfat = Tool::find("mkfs.fat")?;
-    let mkext4 = Tool::find("mkfs.ext4")?;
+    let mkroot = Tool::find_dynamic(&rootfs_tool_name)?;
     let cryptsetup = if command.encrypted_root {
         Some(Tool::find("cryptsetup")?)
     } else {
@@ -179,6 +183,7 @@ fn create(command: args::CreateCommand) -> anyhow::Result<()> {
         .run()
         .context("Partitioning error")?;
 
+    partprobe.execute().run().context("Partition table probing error")?;
     thread::sleep(Duration::from_millis(1000));
 
     info!("Formatting filesystems");
@@ -204,7 +209,7 @@ fn create(command: args::CreateCommand) -> anyhow::Result<()> {
         &root_partition_base as &dyn BlockDevice
     };
 
-    let root_filesystem = Filesystem::format(root_partition, FilesystemType::Ext4, &mkext4)?;
+    let root_filesystem = Filesystem::format(root_partition, rootfs_type, &mkroot)?;
 
     let mount_stack = tool::mount(mount_point.path(), &boot_filesystem, &root_filesystem)?;
 

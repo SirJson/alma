@@ -1,12 +1,11 @@
 use anyhow::{anyhow, Context};
+use log::debug;
 use serde::Deserialize;
 use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
-use log::debug;
-
 
 #[derive(Deserialize)]
 struct Preset {
@@ -109,7 +108,7 @@ impl PresetsCollection {
         let mut environment_variables = HashSet::new();
 
         for preset in list {
-            debug!("Loading preset: {:?}",&preset);
+            debug!("Loading preset: {:?}", &preset);
             if preset.is_dir() {
                 // Build vector of paths to files, then sort by path name
                 // Recursively load directories of preset files

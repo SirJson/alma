@@ -6,6 +6,7 @@ use anyhow::Context;
 pub enum FilesystemType {
     Ext4,
     Vfat,
+    F2FS
 }
 
 impl FilesystemType {
@@ -13,6 +14,19 @@ impl FilesystemType {
         match self {
             FilesystemType::Ext4 => "ext4",
             FilesystemType::Vfat => "vfat",
+            FilesystemType::F2FS => "f2fs"
+        }
+    }
+}
+
+impl std::str::FromStr for FilesystemType {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> anyhow::Result<Self> {
+        let clear_user_arg = s.to_owned().trim().to_lowercase();
+        match clear_user_arg.as_str() {
+            "ext4" => Ok(FilesystemType::Ext4),
+            "f2fs" => Ok(FilesystemType::F2FS),
+            _ =>  Err(anyhow::anyhow!("{} is not supported or was not understood.", clear_user_arg))
         }
     }
 }
@@ -33,6 +47,7 @@ impl<'a> Filesystem<'a> {
         match fs_type {
             FilesystemType::Ext4 => command.arg("-F").arg(block.path()),
             FilesystemType::Vfat => command.arg("-F32").arg(block.path()),
+            FilesystemType::F2FS => command.arg("-f").arg(block.path())
         };
 
         command.run().context("Error formatting filesystem")?;
