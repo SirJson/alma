@@ -10,7 +10,7 @@ pub enum FilesystemType {
 }
 
 impl FilesystemType {
-    pub fn to_mount_type(self) -> &'static str {
+    pub fn to_mount_type(&self) -> &'static str {
         match self {
             FilesystemType::Ext4 => "ext4",
             FilesystemType::Vfat => "vfat",

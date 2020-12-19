@@ -118,8 +118,7 @@ fn create(command: args::CreateCommand) -> anyhow::Result<()> {
     let presets = presets::PresetsCollection::load(&command.presets)?;
 
     debug!("Enumerate host tools...");
-    let rootfs_type = command.rootfs.unwrap_or(FilesystemType::Ext4);
-    let rootfs_tool_name = format!("mkfs.{}",rootfs_type.to_mount_type());
+    let rootfs_tool_name = format!("mkfs.{}",command.rootfs.to_mount_type());
 
     let sgdisk = Tool::find("sgdisk")?;
     let partprobe = Tool::find("partprobe")?;
@@ -209,7 +208,7 @@ fn create(command: args::CreateCommand) -> anyhow::Result<()> {
         &root_partition_base as &dyn BlockDevice
     };
 
-    let root_filesystem = Filesystem::format(root_partition, rootfs_type, &mkroot)?;
+    let root_filesystem = Filesystem::format(root_partition, command.rootfs, &mkroot)?;
 
     let mount_stack = tool::mount(mount_point.path(), &boot_filesystem, &root_filesystem)?;
 
