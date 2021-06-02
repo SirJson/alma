@@ -61,11 +61,11 @@ pub struct CreateCommand {
     #[structopt(short = "e", long = "encrypted-root")]
     pub encrypted_root: bool,
 
-    /// Request a different FilesystemType for the new root filesystem. Supported are: 'ext4', 'f2fs'. 
+    /// Request a different FilesystemType for the new root filesystem. Supported are: 'ext4', 'f2fs'.
     /// You can choose only one format and your input will be parsed case insensitive.
     /// If not set or the argument failed to parse 'ext4' will be used as fallback
-    #[structopt(short = "f", long="rootfs")]
-    pub rootfs: Option<FilesystemType>,
+    #[structopt(short = "f", long, default_value="ext4", case_insensitive=true, possible_values=&["ext4","f2fs"])]
+    pub rootfs: FilesystemType,
 
     /// Path to preset files
     #[structopt(long = "presets", value_name = "preset")]
@@ -107,7 +107,7 @@ pub struct ChrootCommand {
 
     /// If you created an appliance that doesn't use the default rootfs format you need specify your fs type here.
     /// Without using this argument 'ext4' is assumed for your rootfs.
-    #[structopt(short = "f", long="rootfs")]
+    #[structopt(short = "f", long, default_value="ext4", case_insensitive=true, possible_values=&["ext4","f2fs"])]
     pub rootfs: FilesystemType,
 
     /// Optional command to run
